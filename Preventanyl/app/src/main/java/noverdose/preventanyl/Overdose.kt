@@ -6,7 +6,7 @@ import java.util.*
 /**
  * Created by brayden on 2017-11-28.
  */
-class Overdose (val region: String?, val reportedTime: Date, val coordinates: LatLng) {
+class Overdose (var id: String?, val region: String?, val reportedTime: Date, val coordinates: LatLng) {
     //
 //  noverdose.preventanyl.Overdose.swift
 //  Preventanyl
@@ -19,7 +19,7 @@ class Overdose (val region: String?, val reportedTime: Date, val coordinates: La
     // data set...
     //     $data = ["region" => $region, "date"=>$date,"timestamp"=>$time,"latitude"=>$lat,"longitude"=>$long];
 
-    val id: String
+    //val id: String
 
 
     companion object {
@@ -33,7 +33,9 @@ class Overdose (val region: String?, val reportedTime: Date, val coordinates: La
     }
 
     init {
-        this.id = getId(reportedTime.time.toDouble(), coordinates.latitude, coordinates.longitude)
+        if (this.id == null) {
+            this.id = getId(reportedTime.time.toDouble(), coordinates.latitude, coordinates.longitude)
+        }
     }
 
 //    private static func getId(timestamp: Double, latitude: Double, longitude: Double) -> String {
