@@ -369,6 +369,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             getSupportFragmentManager ().beginTransaction ().replace (R.id.content_frame, loginFragment).commitNow ();
         } else if (id == R.id.nav_register) {
 
+        } else if (id == R.id.nav_instructions) {
+
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://towardtheheart.com/naloxone-course"));
+            startActivity(browserIntent);
+
+
+        } else if (id == R.id.nav_shop) {
+
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://towardtheheart.com/naloxone"));
+            startActivity(browserIntent);
+
+
+        } else if (id == R.id.nav_share) {
+            try {
+                Intent i = new Intent(Intent.ACTION_SEND);
+                i.setType("text/plain");
+                i.putExtra(Intent.EXTRA_SUBJECT, "Preventanyl");
+                String sAux = "\nHelp save lives with Preventanyl!\n\n";
+                sAux = sAux + "https://play.google.com/store/apps/details?id=noverdose.preventanyl \n\n";
+                i.putExtra(Intent.EXTRA_TEXT, sAux);
+                startActivity(Intent.createChooser(i, "choose one"));
+            } catch(Exception e) {
+                //e.toString();
+            }
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
