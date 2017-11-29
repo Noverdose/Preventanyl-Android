@@ -63,6 +63,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
 
     /**
+     * Code used in requesting runtime permissions.
+     */
+    private final static int PERM_REQUEST_CODE_DRAW_OVERLAYS = 1234;
+
+
+    /**
+     * Code used in requesting runtime permissions.
+     */
+    private final static int PERM_REQUEST_CODE_INTERNET = 1000;
+
+    /**
      * Constant used in the location settings dialog.
      */
     private static final int REQUEST_CHECK_SETTINGS = 0x1;
@@ -71,6 +82,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * The desired interval for location updates. Inexact. Updates may be more or less frequent.
      */
     private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
+
+    /**
+     * The desired time interval for when using distance (displacement) in location updates. Inexact. Updates may be more or less frequent
+     */
+    private static final long UPDATE_INTERVAL_TIME_DISTANCE_IN_MILLISECONDS = 1;
+
+    /**
+     * The desired distance interval for location updates. Inexact. Updates may be more or less frequent.
+     */
+    private static final long UPDATE_INTERVAL_IN_DISTANCE = 10;
 
     /**
      * The fastest rate for active location updates. Exact. Updates will never be more frequent
@@ -119,12 +140,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * Tracks the status of the location updates request. Value changes when the user presses the
      * Start Updates and Stop Updates buttons.
      */
-    private Boolean mRequestingLocationUpdates;
+    protected static Boolean mRequestingLocationUpdates;
 
     /**
      * Time when the location was updated represented as a String.
      */
-    private String mLastUpdateTime;
+    private static String mLastUpdateTime;
 
     /**
      * Firebase app instance
@@ -146,6 +167,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      */
     public static ArrayList<StaticKit> staticKits = new ArrayList<>();
 
+
+    /**
+     * Arraylist for overdoes
+     */
+    public static ArrayList<Overdose> overdoses = new ArrayList<>();
+
     /**
      * Firebase Database reference
      */
@@ -155,6 +182,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * Preventanyl map fragment
      */
     private PreventanylMapFragment preventanylMapFragment;
+
+    /**
+     * Login fragment
+     */
+    private LoginFragment loginFragment;
 
     public static String fcmToken = "";
 
@@ -180,8 +212,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         databaseReference = database.getReference("statickits");
 
-        String val =  databaseReference.getKey();
-
         mDatabase.child("statickits")
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -204,6 +234,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             });
 
+        mDatabase.child("overdoses")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            FirebaseOverdose overdose = snapshot.getValue(FirebaseOverdose.class);
+
+
+                            /* StaticKit sk = new StaticKit(object.id, object.comments, object.displayName, object.phone,
+                                    object.userId, object.coordinates.get("lat"), object.coordinates.get("long"),
+                                    new Address(object.address.get("city"), object.address.get("country"), object.address.get("postalCode"),
+                                            object.address.get("provinceState"), object.address.get("streetAddress")));
+                            staticKits.add(sk); */
+                            // Log.e ("OVERDOSE", overdose.comments);
+                            // overdoses.add ()
+                        }
+                        Log.e ("Size : ", "" + overdoses.size());
+                        MainActivity.this.preventanylMapFragment.loadMarkers();
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -223,17 +279,51 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         updateValuesFromBundle(savedInstanceState);
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        mSettingsClient = LocationServices.getSettingsClient(this);
+        mSettingsClient      = LocationServices.getSettingsClient(this);
 
         // Kick off the process of building the LocationCallback, LocationRequest, and
         // LocationSettingsRequest objects.
-        createLocationCallback();
-        createLocationRequest();
-        buildLocationSettingsRequest();
+        createLocationCallback ();
+        createLocationRequest ();
+        buildLocationSettingsRequest ();
+
+        // permissionToDrawOverlays ();
+        // permissionForInternet    ();
+
+        if (checkPermissions())
+            startUpdatesHandler();
 
         preventanylMapFragment = new PreventanylMapFragment ();
 
         getSupportFragmentManager ().beginTransaction ().replace (R.id.content_frame, preventanylMapFragment).commitNow ();
+    }
+
+    /**
+     * Permission to draw Overlays/On Other Apps, related to 'android.permission.SYSTEM_ALERT_WINDOW' in Manifest
+     * Resolves issue of popup in Android M and above "Screen overlay detected- To change this permission setting you first have to turn off the screen overlay from Settings > Apps"
+     * If app has not been granted permission to draw on the screen, create an Intent &
+     * set its destination to Settings.ACTION_MANAGE_OVERLAY_PERMISSION &
+     * add a URI in the form of "package:<package name>" to send users directly to your app's page.
+     * Note: Alternative Ignore URI to send user to the full list of apps.
+     */
+    public void permissionToDrawOverlays() {
+        if (android.os.Build.VERSION.SDK_INT >= 23) {   //Android M Or Over
+            if (!Settings.canDrawOverlays(this)) {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
+                startActivityForResult(intent, PERM_REQUEST_CODE_DRAW_OVERLAYS);
+            }
+        }
+    }
+
+    /**
+     * Handles the Start Updates button and requests start of location updates. Does nothing if
+     * updates have already been requested.
+     */
+    public void startUpdatesHandler() {
+        if (!mRequestingLocationUpdates) {
+            mRequestingLocationUpdates = true;
+            startLocationUpdates();
+        }
     }
 
     @Override
@@ -275,7 +365,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         if (id == R.id.nav_login) {
-
+            loginFragment = new LoginFragment();
+            getSupportFragmentManager ().beginTransaction ().replace (R.id.content_frame, loginFragment).commitNow ();
         } else if (id == R.id.nav_register) {
 
         } else if (id == R.id.nav_instructions) {
@@ -378,6 +469,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 super.onLocationResult(locationResult);
 
                 mCurrentLocation = locationResult.getLastLocation();
+
                 mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
                 // updateLocationUI();
             }
@@ -516,8 +608,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onResume();
         // Within {@code onPause()}, we remove location updates. Here, we resume receiving
         // location updates if the user has requested them.
-        if (mRequestingLocationUpdates && checkPermissions()) {
-            startLocationUpdates();
+        if (checkPermissions()) {
+            startUpdatesHandler();
+            preventanylMapFragment = new PreventanylMapFragment();
+            getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, preventanylMapFragment).commitNow();
         } else if (!checkPermissions()) {
             requestPermissions();
         }
@@ -613,7 +707,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 if (mRequestingLocationUpdates) {
                     Log.i(TAG, "Permission granted, updates requested, starting location updates");
-                    startLocationUpdates();
+                    // startLocationUpdates();
+                    startUpdatesHandler();
                 }
             } else {
                 // Permission denied.

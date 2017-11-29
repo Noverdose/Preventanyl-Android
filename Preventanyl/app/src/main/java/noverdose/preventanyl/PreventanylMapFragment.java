@@ -288,26 +288,34 @@ public class PreventanylMapFragment extends Fragment {
                             return;
                         }
 
+                        Toast.makeText(activity, "Location : " + MainActivity.mCurrentLocation.toString(), Toast.LENGTH_LONG).show();
+
                         Double latitude = MainActivity.mCurrentLocation.getLatitude();
                         Double longitude = MainActivity.mCurrentLocation.getLongitude();
 
-
-
                         Overdose overdose = new Overdose(null, new Date(), new LatLng(latitude, longitude));
 
-                        String url = "https://preventanyl.com/regionfinder.php?id="+overdose.getId()+"&lat="+overdose.getCoordinates().latitude+"&long="+overdose.getCoordinates().longitude;
+                        final String url = "https://preventanyl.com/regionfinder.php?id="+overdose.getId()+"&lat="+overdose.getCoordinates().latitude+"&long="+overdose.getCoordinates().longitude;
 
-                        try {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
 
-                            InputStream inputStream = (new URL(url)).openStream();
-                            java.util.Scanner s = new java.util.Scanner(inputStream).useDelimiter("\\A");
-                            String result = s.hasNext() ? s.next() : "";
+                                    InputStream inputStream = (new URL(url)).openStream();
+                                    java.util.Scanner s = new java.util.Scanner(inputStream).useDelimiter("\\A");
+                                    String result = s.hasNext() ? s.next() : "";
 
-                            Log.d("helpMeButton",result);
+                                    Log.d("helpMeButton",result);
 
-                        } catch(Exception ignored) {
+                                } catch(Exception e) {
+                                    e.printStackTrace();
+                                    Log.e("TAG", url);
+                                }
+                            }
+                        }).start();
 
-                        }
+
 
                     }
                 });
@@ -354,7 +362,7 @@ public class PreventanylMapFragment extends Fragment {
                     mClusterManager.clearItems();
                     mClusterManager.addItems(MainActivity.staticKits);
                     mClusterManager.cluster();
-                    // draw_route (MainActivity.mCurrentLocation);
+                    draw_route (MainActivity.mCurrentLocation);
                     zoom_current_position(13);
                     // markerClickListener ();
                 }
