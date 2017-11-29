@@ -31,7 +31,7 @@ public class FirebaseDataReceiver extends WakefulBroadcastReceiver {
                 Object value = intent.getExtras().get(key);
                 Log.e("FirebaseDataReceiver", "Key: " + key + " Value: " + value);
             }
-            
+
             title += intent.getExtras().get("gcm.notification.title");
             body  += intent.getExtras().get("gcm.notification.body");
             if (context != null)
