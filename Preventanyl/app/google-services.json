@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "111767423984",
+    "firebase_url": "https://preventanyl.firebaseio.com",
+    "project_id": "preventanyl",
+    "storage_bucket": "preventanyl.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:111767423984:android:ca26476c28154189",
+        "android_client_info": {
+          "package_name": "noverdose.preventanyl"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "111767423984-sf3trka62f6bj2kd7athu98j4pgbs525.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCozYrroDNlNj20msnYq9eeLexy0kO6lqA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

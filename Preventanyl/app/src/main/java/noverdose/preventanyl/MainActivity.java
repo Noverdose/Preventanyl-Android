@@ -41,8 +41,15 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -105,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     /**
      * Represents a geographical location.
      */
-    private Location mCurrentLocation;
+    protected static Location mCurrentLocation;
 
     /**
      * Tracks the status of the location updates request. Value changes when the user presses the
@@ -118,11 +125,77 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      */
     private String mLastUpdateTime;
 
+    /**
+     * Firebase app instance
+     */
+    // FirebaseApp firebaseApp;
+
+    /**
+     * Firebase database instance
+     */
+    // private FirebaseDatabase database;
+
+    /**
+     * Firebase database reference
+     */
+    public static DatabaseReference databaseReference;
+
+    /**
+     * Arraylist for static kits
+     */
+    public static ArrayList<StaticKit> staticKits = new ArrayList<>();
+
+    /**
+     * Firebase Database reference
+     */
+    public static DatabaseReference mDatabase;
+
+    /**
+     * Preventanyl map fragment
+     */
     private PreventanylMapFragment preventanylMapFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // firebaseApp = FirebaseApp.initializeApp();
+
+        // initialise the firebase instance
+        // database = FirebaseDatabase.getInstance(firebaseApp);
+
+        // databaseReference = FirebaseDatabase.getInstance(firebaseApp).getReference();
+        // FirebaseApp.initializeApp(this);
+
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        // Write a message to the database
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        databaseReference = database.getReference("statickits");
+
+        String val =  databaseReference.getKey();
+
+        mDatabase.child("statickits")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        FirebaseStaticKit object = snapshot.getValue(FirebaseStaticKit.class);
+                        StaticKit sk = new StaticKit(object.id, object.comments, object.displayName, object.phone,
+                                object.userId, object.coordinates.get("lat"), object.coordinates.get("long"),
+                                new Address(object.address.get("city"), object.address.get("country"), object.address.get("postalCode"),
+                                        object.address.get("provinceState"), object.address.get("streetAddress")));
+                        staticKits.add(sk);
+                    }
+                    Log.e ("Size : ", "" + staticKits.size());
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -350,6 +423,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     @Override
                     public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
                         Log.i(TAG, "All location settings are satisfied.");
+
+                        int permissionState = ActivityCompat.checkSelfPermission(getApplicationContext(),
+                                Manifest.permission.ACCESS_FINE_LOCATION);
+                        if (permissionState != PackageManager.PERMISSION_GRANTED)
+                            return;
 
                         //noinspection MissingPermission
                         mFusedLocationClient.requestLocationUpdates(mLocationRequest,
