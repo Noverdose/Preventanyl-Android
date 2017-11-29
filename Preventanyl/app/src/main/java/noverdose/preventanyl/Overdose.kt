@@ -25,7 +25,9 @@ class Overdose (val region: String?, val reportedTime: Date, val coordinates: La
     companion object {
         fun getId(timestamp: Double, latitude: Double, longitude: Double): String {
 
-            return "$timestamp $latitude $longitude".replace("",",")
+
+
+            return "$timestamp" + "_" + "$latitude" + "_" + "$longitude".replace(".",",")
 
         }
     }
