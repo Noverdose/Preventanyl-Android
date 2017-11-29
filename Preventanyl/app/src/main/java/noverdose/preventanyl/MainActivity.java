@@ -396,7 +396,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_login) {
+        if (id == R.id.nav_map) {
+            preventanylMapFragment = new PreventanylMapFragment();
+            getSupportFragmentManager ().beginTransaction ().replace (R.id.content_frame, preventanylMapFragment).commitNow ();
+        } else if (id == R.id.nav_login) {
             loginFragment = new LoginFragment();
             getSupportFragmentManager ().beginTransaction ().replace (R.id.content_frame, loginFragment).commitNow ();
         } else if (id == R.id.nav_register) {
