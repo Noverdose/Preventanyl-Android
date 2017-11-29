@@ -2,18 +2,26 @@ package noverdose.preventanyl;
 
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.VectorDrawable;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.AppCompatDrawableManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,9 +33,12 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.clustering.Cluster;
@@ -39,6 +50,8 @@ import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -293,7 +306,7 @@ public class PreventanylMapFragment extends Fragment {
                         Double latitude = MainActivity.mCurrentLocation.getLatitude();
                         Double longitude = MainActivity.mCurrentLocation.getLongitude();
 
-                        Overdose overdose = new Overdose(null, new Date(), new LatLng(latitude, longitude));
+                        Overdose overdose = new Overdose(null, null, new Date(), new LatLng(latitude, longitude));
 
                         final String url = "https://preventanyl.com/regionfinder.php?id="+overdose.getId()+"&lat="+overdose.getCoordinates().latitude+"&long="+overdose.getCoordinates().longitude;
 
@@ -355,9 +368,27 @@ public class PreventanylMapFragment extends Fragment {
     }
 
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private static Bitmap getBitmap(VectorDrawable vectorDrawable) {
+        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(),
+                vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        vectorDrawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        vectorDrawable.draw(canvas);
+        return bitmap;
+    }
+
+
     public void loadMarkers() {
         getActivity ().runOnUiThread (new Runnable () {
             public void run () {
+
+                if(map == null) {
+                    return;
+                }
+
+                map.clear();
+
                 if(mClusterManager != null) {
                     mClusterManager.clearItems();
                     mClusterManager.addItems(MainActivity.staticKits);
@@ -366,6 +397,23 @@ public class PreventanylMapFragment extends Fragment {
                     zoom_current_position(13);
                     // markerClickListener ();
                 }
+
+                for(Overdose overdose : MainActivity.overdoses) {
+
+                    //BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(getBitmap( (VectorDrawable) activity.getResources().getDrawable(R.drawable.ic_overdose_2)));
+
+
+                    BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_alert);
+
+                    SimpleDateFormat format = new SimpleDateFormat("h:mm a");
+
+
+                    map.addMarker(new MarkerOptions().position(
+                            new LatLng(overdose.getCoordinates().latitude, overdose.getCoordinates().longitude))
+                           .icon(icon)
+                            .title("Overdose at " + format.format(overdose.getReportedTime())));
+                }
+
 
             }
         });

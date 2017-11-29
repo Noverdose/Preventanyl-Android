@@ -9,19 +9,20 @@ import java.util.HashMap;
  */
 
 public class FirebaseOverdose {
-    HashMap<String, String> address;
-    String comments;
-    String phone;
-    String displayName;
-    String userId;
-    HashMap<String, Double> coordinates;
+
     String id;
+    String region;
+    Double latitude;
+    Double longitude;
+    String date;
+    Double timestamp;
+
 
     public FirebaseOverdose() {
 
     }
 
-    public FirebaseOverdose(HashMap<String, String> address, String comments, String phone, String displayName, HashMap<String, Double> coordinates, String id, String userId) {
-        Log.e ("VAL :", comments);
+    public FirebaseOverdose(String id, String region, Double latitude, Double longitude, String date, Double timestamp) {
+        Log.e ("VAL :", region + " "+latitude+ " "+ id + "");
     }
 }
