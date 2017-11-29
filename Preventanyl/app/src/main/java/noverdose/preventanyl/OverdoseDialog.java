@@ -26,7 +26,7 @@ public class OverdoseDialog extends DialogFragment {
         builder.setTitle("Overdose")
                 .setMessage("5")
                 .setCancelable(false)
-                .setPositiveButton("OKAY", new DialogInterface.OnClickListener() {
+                .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
 
                     }
