@@ -10,24 +10,28 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.firebase.jobdispatcher.Constraint;
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
 import com.firebase.jobdispatcher.GooglePlayDriver;
 import com.firebase.jobdispatcher.Job;
-import com.firebase.jobdispatcher.JobParameters;
-import com.firebase.jobdispatcher.SimpleJobService;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = "MyFirebaseMsgService";
+
+    private LocalBroadcastManager broadcaster;
+
+    /* @Override
+    public void onCreate() {
+        broadcaster = LocalBroadcastManager.getInstance(this);
+        super.onCreate();
+    } */
 
     /**
      * Called when message is received.
@@ -54,8 +58,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
             Log.d(TAG, "Message data payload: " + remoteMessage.getData());
-
-            MainActivity.notificationMessage = "" + remoteMessage.getData();
+            /* Intent intent = new Intent("notification");
+            intent.putExtra("message", "" + remoteMessage.getData());
+            broadcaster.sendBroadcast(intent); */
 
             if (/* Check if data needs to be processed by long running job */ true) {
                 // For long-running tasks (10 seconds or more) use Firebase Job Dispatcher.
@@ -81,15 +86,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      * Schedule a job using FirebaseJobDispatcher.
      */
     private void scheduleJob() {
-        /*
         // [START dispatch_job]
-        FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this));
+        /* FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(this));
         Job myJob = dispatcher.newJobBuilder()
                 .setService(MyJobService.class)
                 .setTag("my-job-tag")
                 .build();
-        dispatcher.schedule(myJob);
-        // [END dispatch_job] */
+        dispatcher.schedule(myJob); */
+        // [END dispatch_job]
     }
 
     /**
