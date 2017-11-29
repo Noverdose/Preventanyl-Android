@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      */
     private PreventanylMapFragment preventanylMapFragment;
 
-    public static String fcmToken = "":
+    public static String fcmToken = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
