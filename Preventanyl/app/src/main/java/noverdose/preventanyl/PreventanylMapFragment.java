@@ -334,7 +334,7 @@ public class PreventanylMapFragment extends Fragment {
                     mClusterManager.clearItems();
                     mClusterManager.addItems(MainActivity.staticKits);
                     mClusterManager.cluster();
-                    // draw_route (MainActivity.mCurrentLocation);
+                    draw_route (MainActivity.mCurrentLocation);
                     zoom_current_position(13);
                     // markerClickListener ();
                 }
