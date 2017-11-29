@@ -19,6 +19,10 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class LoginFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
@@ -89,6 +93,11 @@ public class LoginFragment extends Fragment {
     private void signIn(String email, String password) {
         Log.d("Login", "signIn:" + email);
 
+        if (MainActivity.mCurrentLocation == null) {
+            Toast.makeText(activity, "No Location", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         // [START sign_in_with_email]
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
@@ -100,6 +109,20 @@ public class LoginFragment extends Fragment {
                             Toast.makeText(activity, "Logged in.",
                                     Toast.LENGTH_SHORT).show();
                             FirebaseUser user = mAuth.getCurrentUser();
+
+                            String uid = FirebaseAuth.getInstance().getUid();
+
+                            Map<String, Object> add = new HashMap<String, Object>();
+
+                            add.put("id", MainActivity.fcmToken);
+
+                            Map<String, Double> pos = new HashMap<String, Double>();
+                            pos.put("lat", MainActivity.mCurrentLocation.getLatitude());
+                            pos.put("lng", MainActivity.mCurrentLocation.getLongitude());
+
+                            add.put("loc", pos);
+
+                            MainActivity.mDatabase.child("userLocations").child(uid).updateChildren(add);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("Login", "signInWithEmail:failure", task.getException());

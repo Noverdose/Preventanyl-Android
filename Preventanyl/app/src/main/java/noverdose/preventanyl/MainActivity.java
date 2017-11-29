@@ -2,7 +2,10 @@ package noverdose.preventanyl;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -14,6 +17,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -191,13 +195,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public static String fcmToken = "";
 
+    public Thread thread;
+
+    public Runnable runnable;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         fcmToken = FirebaseInstanceId.getInstance().getToken();
-        Log.d("MYTAG", "This is your Firebase token" + fcmToken);
+        Log.e("MYTAG", "This is your Firebase token : " + fcmToken);
 
+        // Start the background Firebase activity
 
         // firebaseApp = FirebaseApp.initializeApp();
 
@@ -226,7 +235,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         staticKits.add(sk);
                     }
                     Log.e ("static kits Size : ", "" + staticKits.size());
-                    MainActivity.this.preventanylMapFragment.loadMarkers();
+                    // MainActivity.this.preventanylMapFragment.loadMarkers();
                 }
 
                 @Override
@@ -268,8 +277,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             Log.e ("OVERDOSE", overdose.getId() + " " + overdose.getRegion() + " " + overdose.getCoordinates());
                              overdoses.add (overdose);
                         }
+                      
+                        // Log.e ("Size : ", "" + overdoses.size());
+                        // MainActivity.this.preventanylMapFragment.loadMarkers();
+                      
                         Log.e ("overdoses Size : ", "" + overdoses.size());
-                        MainActivity.this.preventanylMapFragment.loadMarkers();
+                        // MainActivity.this.preventanylMapFragment.loadMarkers();
+                      
                     }
 
                     @Override
@@ -387,11 +401,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             getSupportFragmentManager ().beginTransaction ().replace (R.id.content_frame, loginFragment).commitNow ();
         } else if (id == R.id.nav_register) {
 
-        } else if (id == R.id.nav_instructions) {
+        /*} else if (id == R.id.nav_instructions) {
 
             Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://towardtheheart.com/naloxone-course"));
             startActivity(browserIntent);
-
+*/
 
         } else if (id == R.id.nav_shop) {
 
@@ -709,6 +723,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     REQUEST_PERMISSIONS_REQUEST_CODE);
         }
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        LocalBroadcastManager.getInstance(this).registerReceiver((mMessageReceiver),
+                new IntentFilter("notification")
+        );
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+    }
+
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.e("JI", "JKLJJ");
+            String message = intent.getStringExtra("message");
+            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+        }
+    };
 
     /**
      * Callback received when a permissions request has been completed.
