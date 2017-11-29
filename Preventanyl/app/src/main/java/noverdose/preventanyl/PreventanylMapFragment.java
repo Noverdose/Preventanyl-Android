@@ -37,6 +37,8 @@ import com.koushikdutta.ion.Ion;
 
 import org.json.JSONObject;
 
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -281,13 +283,31 @@ public class PreventanylMapFragment extends Fragment {
                     @Override
                     public void onClick(View v) {
 
+                        if(MainActivity.mCurrentLocation == null) {
+                            Toast.makeText(getActivity(),"No location", Toast.LENGTH_LONG).show();
+                            return;
+                        }
 
-                        Overdose overdose = new Overdose(null, new Date(), new LatLng(MainActivity.mCurrentLocation.getLatitude(), MainActivity.mCurrentLocation.getLongitude()));
+                        Double latitude = MainActivity.mCurrentLocation.getLatitude();
+                        Double longitude = MainActivity.mCurrentLocation.getLongitude();
+
+
+
+                        Overdose overdose = new Overdose(null, new Date(), new LatLng(latitude, longitude));
 
                         String url = "https://preventanyl.com/regionfinder.php?id="+overdose.getId()+"&lat="+overdose.getCoordinates().latitude+"&long="+overdose.getCoordinates().longitude;
 
-                        // TODO post this URL
+                        try {
 
+                            InputStream inputStream = (new URL(url)).openStream();
+                            java.util.Scanner s = new java.util.Scanner(inputStream).useDelimiter("\\A");
+                            String result = s.hasNext() ? s.next() : "";
+
+                            Log.d("helpMeButton",result);
+
+                        } catch(Exception ignored) {
+
+                        }
 
                     }
                 });
