@@ -93,6 +93,11 @@ public class LoginFragment extends Fragment {
     private void signIn(String email, String password) {
         Log.d("Login", "signIn:" + email);
 
+        if (MainActivity.mCurrentLocation == null) {
+            Toast.makeText(activity, "No Location", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         // [START sign_in_with_email]
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {

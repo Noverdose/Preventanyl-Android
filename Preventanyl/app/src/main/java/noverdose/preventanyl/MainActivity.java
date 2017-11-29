@@ -205,6 +205,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         fcmToken = FirebaseInstanceId.getInstance().getToken();
         Log.e("MYTAG", "This is your Firebase token : " + fcmToken);
 
+        // Start the background Firebase activity
+
         // firebaseApp = FirebaseApp.initializeApp();
 
         // initialise the firebase instance
@@ -232,7 +234,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         staticKits.add(sk);
                     }
                     Log.e ("Size : ", "" + staticKits.size());
-                    MainActivity.this.preventanylMapFragment.loadMarkers();
+                    // MainActivity.this.preventanylMapFragment.loadMarkers();
                 }
 
                 @Override
@@ -258,7 +260,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             // overdoses.add ()
                         }
                         Log.e ("Size : ", "" + overdoses.size());
-                        MainActivity.this.preventanylMapFragment.loadMarkers();
+                        // MainActivity.this.preventanylMapFragment.loadMarkers();
                     }
 
                     @Override
@@ -679,7 +681,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onStart() {
         super.onStart();
         LocalBroadcastManager.getInstance(this).registerReceiver((mMessageReceiver),
-                new IntentFilter("MyData")
+                new IntentFilter("notification")
         );
     }
 
@@ -692,6 +694,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            Log.e("JI", "JKLJJ");
             String message = intent.getStringExtra("message");
             Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
         }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
           package="noverdose.preventanyl">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -16,8 +17,7 @@
             android:name=".MyFirebaseMessagingService">
             <intent-filter>
                 <action
-                    android:name="com.google.firebase.MESSAGING_EVENT"
-                    android:exported="false" />
+                    android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 
@@ -29,6 +29,18 @@
             </intent-filter>
         </service>
 
+        <receiver
+            android:name=".FirebaseDataReceiver"
+            android:exported="true"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            </intent-filter>
+        </receiver>
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/common_google_signin_btn_icon_dark" />
 
         <activity
             android:name=".MainActivity"

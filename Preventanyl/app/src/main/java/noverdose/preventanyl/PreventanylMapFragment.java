@@ -356,7 +356,10 @@ public class PreventanylMapFragment extends Fragment {
 
 
     public void loadMarkers() {
-        getActivity ().runOnUiThread (new Runnable () {
+        if (activity == null)
+            return;
+
+        activity.runOnUiThread (new Runnable () {
             public void run () {
                 if(mClusterManager != null) {
                     mClusterManager.clearItems();
