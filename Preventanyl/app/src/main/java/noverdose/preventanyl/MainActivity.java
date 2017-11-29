@@ -183,6 +183,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      */
     private PreventanylMapFragment preventanylMapFragment;
 
+    /**
+     * Login fragment
+     */
+    private LoginFragment loginFragment;
+
     public static String fcmToken = "";
 
     @Override
@@ -360,7 +365,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         if (id == R.id.nav_login) {
-
+            loginFragment = new LoginFragment();
+            getSupportFragmentManager ().beginTransaction ().replace (R.id.content_frame, loginFragment).commitNow ();
         } else if (id == R.id.nav_register) {
 
         }
