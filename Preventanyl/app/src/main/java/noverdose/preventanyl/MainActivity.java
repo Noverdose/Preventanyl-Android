@@ -190,13 +190,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public static String fcmToken = "";
 
+    public Thread thread;
+
+    public Runnable runnable;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         fcmToken = FirebaseInstanceId.getInstance().getToken();
-        Log.d("MYTAG", "This is your Firebase token" + fcmToken);
-
+        Log.e("MYTAG", "This is your Firebase token : " + fcmToken);
 
         // firebaseApp = FirebaseApp.initializeApp();
 
