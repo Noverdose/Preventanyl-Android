@@ -401,11 +401,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             getSupportFragmentManager ().beginTransaction ().replace (R.id.content_frame, loginFragment).commitNow ();
         } else if (id == R.id.nav_register) {
 
-        /*} else if (id == R.id.nav_instructions) {
+        } else if (id == R.id.nav_instructions) {
 
             Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://towardtheheart.com/naloxone-course"));
             startActivity(browserIntent);
-*/
 
         } else if (id == R.id.nav_shop) {
 
