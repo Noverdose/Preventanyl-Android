@@ -288,7 +288,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (checkPermissions())
             startUpdatesHandler();
 
-
         preventanylMapFragment = new PreventanylMapFragment ();
 
         getSupportFragmentManager ().beginTransaction ().replace (R.id.content_frame, preventanylMapFragment).commitNow ();
@@ -440,6 +439,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 super.onLocationResult(locationResult);
 
                 mCurrentLocation = locationResult.getLastLocation();
+
                 mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
                 // updateLocationUI();
             }
@@ -677,7 +677,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 if (mRequestingLocationUpdates) {
                     Log.i(TAG, "Permission granted, updates requested, starting location updates");
-                    startLocationUpdates();
+                    // startLocationUpdates();
+                    startUpdatesHandler();
                 }
             } else {
                 // Permission denied.
