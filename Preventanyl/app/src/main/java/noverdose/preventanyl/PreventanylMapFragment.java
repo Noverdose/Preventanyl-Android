@@ -3,6 +3,7 @@ package noverdose.preventanyl;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -17,6 +18,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -36,6 +38,7 @@ import com.koushikdutta.ion.Ion;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -271,6 +274,27 @@ public class PreventanylMapFragment extends Fragment {
 
                 mClusterManager  = new ClusterManager<> (mContext, map);
 
+
+                Button helpMeButton = activity.findViewById(R.id.helpMeButton);
+
+                helpMeButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+
+                        Overdose overdose = new Overdose(null, new Date(), new LatLng(MainActivity.mCurrentLocation.getLatitude(), MainActivity.mCurrentLocation.getLongitude()));
+
+                        String url = "https://preventanyl.com/regionfinder.php?id="+overdose.getId()+"&lat="+overdose.getCoordinates().latitude+"&long="+overdose.getCoordinates().longitude;
+
+                        // TODO post this URL
+
+
+                    }
+                });
+
+                //android:id="@+id/directionBtn"
+
+
                 map.setOnCameraIdleListener(mClusterManager);
                 map.setOnMarkerClickListener(mClusterManager);
                 map.setOnInfoWindowClickListener(mClusterManager);
@@ -295,18 +319,28 @@ public class PreventanylMapFragment extends Fragment {
 
                 map.getUiSettings().setMapToolbarEnabled(true);
 
-                getActivity ().runOnUiThread (new Runnable () {
-                    public void run () {
-                        mClusterManager.addItems(MainActivity.staticKits);
-                        mClusterManager.cluster();
-                        // draw_route (MainActivity.mCurrentLocation);
-                        zoom_current_position(13);
-                        // markerClickListener ();
-                    }
-                });
+                loadMarkers();
+
             }
         });
         // pullDataFromServer ();
+    }
+
+
+    public void loadMarkers() {
+        getActivity ().runOnUiThread (new Runnable () {
+            public void run () {
+                if(mClusterManager != null) {
+                    mClusterManager.clearItems();
+                    mClusterManager.addItems(MainActivity.staticKits);
+                    mClusterManager.cluster();
+                    // draw_route (MainActivity.mCurrentLocation);
+                    zoom_current_position(13);
+                    // markerClickListener ();
+                }
+
+            }
+        });
     }
 
 }

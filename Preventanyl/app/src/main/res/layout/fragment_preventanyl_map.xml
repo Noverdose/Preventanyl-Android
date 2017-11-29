@@ -1,38 +1,34 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
-             tools:context="noverdose.preventanyl.PreventanylMapFragment">
+             tools:context="noverdose.preventanyl.PreventanylMapFragment"
+    android:orientation="vertical">
 
     <fragment
         android:id="@+id/map_view"
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="0dp"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         class="com.google.android.gms.maps.SupportMapFragment"
-        tools:layout="@layout/activity_main">
+        tools:layout="@layout/activity_main"
+        android:layout_weight="1">
 
-        <RelativeLayout android:orientation="horizontal"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="bottom"
-                        android:paddingTop="20dp">
 
-            <Button
-                android:id="@+id/directionBtn"
-                android:text="Help Me"
-                android:textColor="#ffffff"
-                android:textStyle="bold"
-                android:textSize="15dp"
-                android:textAlignment="center"
-                android:background="#c21b1b"
-                android:paddingLeft="70dp"
-                android:paddingRight="70dp"
-                android:layout_alignParentBottom="true"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-        </RelativeLayout>
     </fragment>
 
-</FrameLayout>
+
+        <Button
+            android:id="@+id/helpMeButton"
+            android:text="Help Me"
+            android:textColor="#ffffff"
+            android:textStyle="bold"
+            android:textSize="15dp"
+            android:textAlignment="center"
+            android:background="#c21b1b"
+            android:paddingLeft="70dp"
+            android:paddingRight="70dp"
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+</LinearLayout>
