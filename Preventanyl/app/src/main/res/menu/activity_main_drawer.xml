@@ -24,14 +24,22 @@
     <item android:title="Links">
 
         <menu>
+
             <item
-            android:id="@+id/nav_share"
-            android:icon="@drawable/ic_menu_share"
-            android:title="Share"/>
+                android:id="@+id/nav_instructions"
+                android:icon="@drawable/ic_steps"
+                android:title="Instructions"/>
+
             <item
-            android:id="@+id/nav_shop"
-            android:icon="@drawable/ic_trolley"
-            android:title="Purchase Kit"/>
+                android:id="@+id/nav_shop"
+                android:icon="@drawable/ic_trolley"
+                android:title="Get a Kit"/>
+
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/ic_menu_share"
+                android:title="Share"/>
+
         </menu>
 
     </item>

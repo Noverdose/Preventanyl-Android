@@ -41,6 +41,7 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -233,7 +234,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                         object.address.get("provinceState"), object.address.get("streetAddress")));
                         staticKits.add(sk);
                     }
-                    Log.e ("Size : ", "" + staticKits.size());
+                    Log.e ("static kits Size : ", "" + staticKits.size());
                     // MainActivity.this.preventanylMapFragment.loadMarkers();
                 }
 
@@ -248,7 +249,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                            FirebaseOverdose overdose = snapshot.getValue(FirebaseOverdose.class);
+                            FirebaseOverdose fbOverdose = snapshot.getValue(FirebaseOverdose.class);
+
+                            if(fbOverdose == null) continue;
+
+                            if(fbOverdose.timestamp == null) {
+
+                                Log.e(TAG, "timestamp is null!");
+                                Log.d(TAG, snapshot.toString());
+                                continue;
+                            }
+
+                            Long timestamp = fbOverdose.timestamp.longValue();
+                            Date date = new Date((long)timestamp*1000);
+
+                            Double lat = fbOverdose.latitude;  //Double.parseDouble(fbOverdose.latitude);
+                            Double lon = fbOverdose.longitude; //Double.parseDouble(fbOverdose.longitude);
+
+                            Overdose overdose = new Overdose(fbOverdose.id, fbOverdose.region, date, new LatLng(lat, lon));
 
 
                             /* StaticKit sk = new StaticKit(object.id, object.comments, object.displayName, object.phone,
@@ -256,11 +274,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                     new Address(object.address.get("city"), object.address.get("country"), object.address.get("postalCode"),
                                             object.address.get("provinceState"), object.address.get("streetAddress")));
                             staticKits.add(sk); */
-                            // Log.e ("OVERDOSE", overdose.comments);
-                            // overdoses.add ()
+                            Log.e ("OVERDOSE", overdose.getId() + " " + overdose.getRegion() + " " + overdose.getCoordinates());
+                             overdoses.add (overdose);
                         }
-                        Log.e ("Size : ", "" + overdoses.size());
+                      
+                        // Log.e ("Size : ", "" + overdoses.size());
                         // MainActivity.this.preventanylMapFragment.loadMarkers();
+                      
+                        Log.e ("overdoses Size : ", "" + overdoses.size());
+                        // MainActivity.this.preventanylMapFragment.loadMarkers();
+                      
                     }
 
                     @Override
@@ -378,6 +401,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             getSupportFragmentManager ().beginTransaction ().replace (R.id.content_frame, loginFragment).commitNow ();
         } else if (id == R.id.nav_register) {
 
+        } else if (id == R.id.nav_instructions) {
+
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://towardtheheart.com/naloxone-course"));
+            startActivity(browserIntent);
+
+
+        } else if (id == R.id.nav_shop) {
+
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://towardtheheart.com/naloxone"));
+            startActivity(browserIntent);
+
+
+        } else if (id == R.id.nav_share) {
+            try {
+                Intent i = new Intent(Intent.ACTION_SEND);
+                i.setType("text/plain");
+                i.putExtra(Intent.EXTRA_SUBJECT, "Preventanyl");
+                String sAux = "\nHelp save lives with Preventanyl!\n\n";
+                sAux = sAux + "https://play.google.com/store/apps/details?id=noverdose.preventanyl \n\n";
+                i.putExtra(Intent.EXTRA_TEXT, sAux);
+                startActivity(Intent.createChooser(i, "choose one"));
+            } catch(Exception e) {
+                //e.toString();
+            }
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
